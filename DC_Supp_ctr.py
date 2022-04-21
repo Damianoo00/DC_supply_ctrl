@@ -21,29 +21,46 @@ def DeviceInfo(device: pyvisa.resources.serial.SerialInstrument):
     print(device.query('*idn?'))
 
 
-def SetOutputState(device: pyvisa.resources.serial.SerialInstrument):
-    device.write('OUTPut:STATe ON')
+def SetOutputState(device: pyvisa.resources.serial.SerialInstrument,  state: bool):
+    device.write('OUTPut:STATe ' + str(state))
     sleep(2)
-    response = device.query('OUTPut:STATe ON?')
+    response = device.query('OUTPut:STATe?')
     print(f"Output State: {response}")
 
 
-def SetVoltage(device: pyvisa.resources.serial.SerialInstrument):
-    device.write(':VOLTage 2.0')
+def SetVoltage(device: pyvisa.resources.serial.SerialInstrument, Volt: float):
+    device.write(':VOLTage ' + str(Volt))
     sleep(2)
     response = device.query(':VOLTage?')
     print(f"Voltage: {response}")
 
 
-def SetCurrent(device: pyvisa.resources.serial.SerialInstrument):
-    device.write(':CURRent 2.0')
+def SetCurrent(device: pyvisa.resources.serial.SerialInstrument, Curr: float) -> None:
+    device.write(':CURRent '+str(Curr))
     sleep(2)
     response = device.query(':CURRent?')
     print(f"Current: {response}")
 
 
+def GetCurrent(device: pyvisa.resources.serial.SerialInstrument) -> float:
+    response = device.query(':CURRent?')
+    return response
+
+
+def GetVoltage(device: pyvisa.resources.serial.SerialInstrument) -> float:
+    response = device.query(':VOLTage?')
+    return response
+
+
+def stairs(device: pyvisa.resources.serial.SerialInstrument):
+    for i in range(5):
+        SetVoltage(device, i)
+        sleep(2)
+
+
 if __name__ == "__main__":
     supply = SelectDevice()
-    # DeviceInfo(supply)
-    # SetOutputState(supply)
-    # SetVoltage(supply)
+    DeviceInfo(supply)
+    SetOutputState(supply, 1)
+    SetVoltage(supply, 2.0)
+    stairs(supply)
